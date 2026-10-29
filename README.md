@@ -23,6 +23,75 @@ The project is organized around desktop-native interaction patterns rather than 
 
 <img src="./assets/interaction-system.svg" alt="QuickFile surfaces and their shared command model" width="100%" />
 
+## Native Application & Runtime Architecture
+
+QuickFile is built as a **Tauri 2 desktop application** with a **React 18 / TypeScript / Vite 6** interface and a modular **Rust** backend. It is not simply a browser-based file manager: its interaction model is designed around native filesystem commands, desktop events, local process coordination and persisted operational state.
+
+\`Tauri 2\` · \`Rust\` · \`React 18\` · \`TypeScript\` · \`Vite 6\` · \`SQLite / WAL\` · \`Unix Domain Sockets (Linux)\`
+
+<img src="./assets/native-runtime.svg" alt="QuickFile desktop runtime with Tauri webview, Rust action and job subsystems, local persistence and Linux IPC entry points" width="100%" />
+
+| Runtime boundary | Technical responsibility |
+|:---|:---|
+| **Desktop WebView** | Context-sensitive surfaces, keyboard and pointer interaction, preview, progress and settings |
+| **Tauri command bridge** | Typed frontend-to-native commands, desktop window control and event dispatch |
+| **Rust action registry** | File-context action eligibility and suggestion ranking, independent of menu presentation |
+| **Rust job engine** | File operations, job state and operation-dependent undo handling |
+| **SQLite with WAL** | Local persistence and concurrent-read-friendly database journaling |
+| **CLI / resident host** | On Linux, a local Unix-domain-socket path for activating the resident application from an external command |
+
+### Desktop activation and IPC
+
+A defining aspect of the architecture is the separation between **the short-lived invocation** and **the resident desktop UI**. On Linux, a CLI entry point can send a request through a Unix domain socket to a resident host; the native application then routes an event into the Tauri frontend. This avoids treating every command invocation as a new full application session.
+
+\`\`\`mermaid
+sequenceDiagram
+    participant CLI as CLI / External Invocation
+    participant HOST as Resident Host (Linux)
+    participant RUST as Tauri / Rust
+    participant UI as React Surface
+    participant JOBS as Action + Job Engine
+
+    CLI->>HOST: Unix-domain-socket request
+    HOST->>RUST: Activate desktop surface
+    RUST-->>UI: Native event / selected context
+    UI->>RUST: Tauri command invocation
+    RUST->>JOBS: Resolve or execute operation
+    JOBS-->>RUST: Result / job state
+    RUST-->>UI: Updated operation state
+\`\`\`
+
+The sequence illustrates the architectural path; event handling, focus behavior and cross-platform launch integration are platform-dependent.
+
+### Actual desktop surfaces
+
+The desktop code separates distinct modes rather than styling one generic window differently:
+
+- **Mini Popup:** compact action access around the active selection.
+- **Command Palette:** searchable, keyboard-oriented commands and clipboard-related interaction.
+- **Radial / Marking Menu:** an eight-sector SVG-based radial surface, with pointer-direction handling, number keys \`1–8\`, arrow keys, Enter and Escape.
+- **QuickCompress HUD:** a small, operation-specific compression interface.
+- **AI Explain:** a dedicated surface for explaining an operation or contextual result.
+- **Settings:** an extensive configuration surface containing multiple sections, including presentation and interaction preferences.
+
+The Rust desktop layer uses different window geometries for compact compression, radial and full-size surfaces; that native sizing is part of the interface architecture, not merely a CSS breakpoint.
+
+### Action selection, execution and recovery
+
+QuickFile's backend defines **file-aware action filtering** (\`ActionRegistry::actions_for_files\`) and **suggestion ordering** (\`rank_suggestions\`). These concepts keep action applicability distinct from how many buttons happen to fit on a menu. A separate Rust jobs subsystem owns execution and undo-related logic.
+
+An undo-capable job engine is not a guarantee that every destructive filesystem operation can be perfectly reversed. The supported recovery behavior must follow the underlying operation and actual filesystem result.
+
+### AI interface versus inference capability
+
+The application includes an **AI Explain interface and example UI responses**. This is distinct from proof that every advertised AI workflow has a complete production inference pipeline. Semantic search, content summarization, automatic classification and natural-language batch operations are described below as **product capability areas**, with their actual behavior dependent on model providers, file adapters, policy validation and consent.
+
+### Platform behavior
+
+The native integration is primarily oriented toward **Linux desktop environments**, with separate considerations for **X11 and Wayland**. Window focus, global-pointer gestures, transparency and compositor behavior are not interchangeable between the two. Windows and macOS integration structures also exist in the project, but their presence does not establish complete feature parity on those platforms.
+
+---
+
 ## Interaction Surfaces
 
 | Surface | Interaction model | Engineering concern |
