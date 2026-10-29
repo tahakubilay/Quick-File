@@ -21,6 +21,75 @@ Klasik dosya yöneticileri gezinmeye, launcher'lar komutlara, AI araçları ise 
 
 <img src="./assets/interaction-system.svg" alt="QuickFile etkileşim yüzeyleri ve ortak komut motoru" width="100%" />
 
+## Native Uygulama ve Çalışma Mimarisi
+
+QuickFile, **Tauri 2** masaüstü uygulama altyapısı üzerinde, **React 18 / TypeScript / Vite 6** arayüzü ve modüler **Rust** backend ile geliştirilmiştir. Yalnızca tarayıcı içinde çalışan bir dosya yöneticisi değildir; dosya sistemi komutları, işletim sistemi olayları, yerel süreç koordinasyonu ve kalıcı operasyonel state etrafında şekillenir.
+
+`Tauri 2` · `Rust` · `React 18` · `TypeScript` · `Vite 6` · `SQLite / WAL` · `Unix Domain Sockets (Linux)`
+
+<img src="./assets/native-runtime.svg" alt="QuickFile Tauri arayüzü, Rust işlem modülleri, yerel veritabanı ve Linux IPC bağlantıları" width="100%" />
+
+| Çalışma katmanı | Teknik sorumluluk |
+|:---|:---|
+| **Desktop WebView** | Bağlamsal arayüzler, klavye/fare etkileşimi, önizleme, ilerleme ve ayarlar |
+| **Tauri komut köprüsü** | Frontend ile native Rust komutları, pencere kontrolü ve event aktarımı |
+| **Rust Action Registry** | Dosya bağlamına göre işlem uygunluğu ve önerilerin sıralanması |
+| **Rust Job Engine** | Dosya operasyonları, job state ve işleme göre geri alma (undo) mantığı |
+| **SQLite / WAL** | Yerel kalıcı veri ve write-ahead logging |
+| **CLI / Resident Host** | Linux'ta Unix domain socket üzerinden çalışan uygulamayı etkinleştirme |
+
+### Masaüstü aktivasyonu ve IPC
+
+Mimarinin temel ayrımlarından biri **kısa ömürlü komut çağrısı** ile **çalışmaya devam eden masaüstü uygulamasını** birbirinden ayırmasıdır. Linux'ta bir CLI komutu Unix domain socket üzerinden resident host'a istek gönderebilir; native katman da ilgili event'i Tauri arayüzüne aktarır. Böylece her harici çağrının yeni bir tam uygulama oturumu başlatması gerekmez.
+
+```mermaid
+sequenceDiagram
+    participant CLI as CLI / Harici Komut
+    participant HOST as Resident Host (Linux)
+    participant RUST as Tauri / Rust
+    participant UI as React Arayüzü
+    participant JOBS as Action + Job Engine
+
+    CLI->>HOST: Unix domain socket isteği
+    HOST->>RUST: Masaüstü yüzeyini etkinleştir
+    RUST-->>UI: Native event / seçim bağlamı
+    UI->>RUST: Tauri komut çağrısı
+    RUST->>JOBS: İşlemi çözümle veya yürüt
+    JOBS-->>RUST: Sonuç / job state
+    RUST-->>UI: Güncel işlem durumu
+```
+
+Diyagram mimari yolu gösterir; pencere odağı, event yönetimi ve işletim sistemine entegrasyon platforma göre farklı davranabilir.
+
+### Uygulamanın somut arayüzleri
+
+Kaynak kodda tek bir genel pencere yerine farklı etkileşim yüzeyleri bulunur:
+
+- **Mini Popup:** seçili dosya veya bağlam için kompakt işlem erişimi.
+- **Command Palette:** aranabilir komutlar, klavye ağırlıklı gezinme ve clipboard etkileşimi.
+- **Radial / Marking Menu:** sekiz dilimli SVG radial menü; pointer yönü, `1–8` tuşları, yön tuşları, Enter ve Escape etkileşimleri.
+- **QuickCompress HUD:** sıkıştırma işlemlerine ayrılmış kompakt işlem arayüzü.
+- **AI Explain:** seçili bağlamı veya bir işlemi açıklamaya yönelik ayrı arayüz.
+- **Settings:** sunum ve etkileşim tercihleri dahil birden fazla yapılandırma bölümünü içeren geniş ayar yüzeyi.
+
+Native Rust katmanı; sıkıştırma HUD'u, radial menü ve tam boy çalışma alanları için farklı pencere ölçüleri tanımlar. Bu davranış yalnızca CSS responsive ayarı değil, gerçek masaüstü pencere mimarisinin parçasıdır.
+
+### İşlem seçimi, yürütme ve geri alma
+
+Backend'de dosyaya göre **aksiyon filtreleme** (`ActionRegistry::actions_for_files`) ve **öneri sıralama** (`rank_suggestions`) mantığı bulunur. Böylece bir işlemin dosyaya uygunluğu, menüde kaç öğe gösterildiğinden bağımsız olarak modellenebilir. Ayrı Rust job modülü işlemlerin yürütülmesini ve undo ile ilişkili mantığı ele alır.
+
+Undo altyapısının bulunması bütün yıkıcı dosya işlemlerinin kesinlikle geri alınabileceği anlamına gelmez. Kurtarma garantisi, işlem türü ve dosya sistemindeki gerçek sonuca bağlıdır.
+
+### AI arayüzü ile model yeteneklerinin ayrımı
+
+Uygulamada **AI Explain arayüzü ve örnek AI cevapları** bulunur. Bu durum, README'de anlatılan tüm AI senaryolarının uçtan uca gerçek model inference entegrasyonuyla tamamlandığını tek başına kanıtlamaz. Anlamsal arama, içerik özetleme, sınıflandırma ve doğal dille toplu işlem alanları aşağıda **ürün yetenekleri** olarak açıklanır; gerçek davranış için model sağlayıcıları, dosya adaptörleri, doğrulama politikaları ve onay mekanizması gerekir.
+
+### Platform entegrasyonu
+
+Native sistemin öncelikli odağı **Linux masaüstüdür**. **X11 ve Wayland**, özellikle pencere odağı, global pointer hareketi, saydamlık ve compositor davranışlarında farklı sınırlara sahiptir. Projede Windows ve macOS entegrasyonu için de yapılandırma bulunur; ancak bu dosyaların varlığı o platformlarda bütün özelliklerin eşdeğer biçimde doğrulandığı anlamına gelmez.
+
+---
+
 ## Etkileşim Yüzeyleri
 
 | Bileşen | Etkileşim | Teknik gereksinim |
