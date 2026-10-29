@@ -21,6 +21,75 @@ Klassische Dateimanager sind auf Navigation ausgelegt, Launcher auf Befehle und 
 
 <img src="./assets/interaction-system.svg" alt="Interaktionsoberflächen von QuickFile mit gemeinsamem Befehlsmodell" width="100%" />
 
+## Native Anwendung und Laufzeitarchitektur
+
+QuickFile basiert auf einer **Tauri-2-Desktopanwendung** mit **React 18 / TypeScript / Vite 6** für die Oberfläche und einem modularen **Rust-Backend**. Es handelt sich nicht nur um einen browserbasierten Dateimanager: Das Interaktionsmodell verwendet native Dateisystembefehle, Desktop-Events, lokale Prozesskoordination und persistierten Betriebszustand.
+
+`Tauri 2` · `Rust` · `React 18` · `TypeScript` · `Vite 6` · `SQLite / WAL` · `Unix Domain Sockets (Linux)`
+
+<img src="./assets/native-runtime.svg" alt="QuickFile-Laufzeit mit Tauri-WebView, Rust-Aktions- und Jobmodulen, lokaler Persistenz und Linux-IPC" width="100%" />
+
+| Laufzeitgrenze | Technische Verantwortung |
+|:---|:---|
+| **Desktop-WebView** | Kontextoberflächen, Tastatur/Maus, Vorschau, Fortschritt, Einstellungen |
+| **Tauri-Befehlsbrücke** | Typisierte Frontend-zu-Rust-Befehle, Fenstersteuerung und Events |
+| **Rust Action Registry** | Dateikontextabhängige Befehlsfilterung und Vorschlagsranking |
+| **Rust Job Engine** | Dateioperationen, Jobzustand und operationsabhängiges Undo |
+| **SQLite mit WAL** | Lokale Persistenz mit Write-Ahead-Logging |
+| **CLI / Resident Host** | Unter Linux Aktivierung über einen lokalen Unix-Domain-Socket |
+
+### Desktop-Aktivierung und IPC
+
+Ein wichtiger Architekturpunkt ist die Trennung zwischen **kurzlebigem Aufruf** und **dauerhaft laufender Desktop-Oberfläche**. Unter Linux kann ein CLI-Prozess über einen Unix-Domain-Socket mit dem Resident Host kommunizieren. Dieser veranlasst dann ein Event in Richtung Tauri-Frontend. Dadurch muss ein externer Befehl nicht jedes Mal einen vollständigen neuen Anwendungsprozess starten.
+
+```mermaid
+sequenceDiagram
+    participant CLI as CLI / Externer Aufruf
+    participant HOST as Resident Host (Linux)
+    participant RUST as Tauri / Rust
+    participant UI as React-Oberfläche
+    participant JOBS as Aktionen + Jobs
+
+    CLI->>HOST: Unix-Domain-Socket-Anfrage
+    HOST->>RUST: Desktop-Oberfläche aktivieren
+    RUST-->>UI: Natives Event / Auswahlkontext
+    UI->>RUST: Tauri-Befehl
+    RUST->>JOBS: Aktion auflösen oder ausführen
+    JOBS-->>RUST: Ergebnis / Jobstatus
+    RUST-->>UI: Neuer Aktionszustand
+```
+
+Das Diagramm beschreibt den Architekturpfad. Fokusverhalten, Event-Verarbeitung und plattformübergreifende Aktivierung sind von der jeweiligen Desktopumgebung abhängig.
+
+### Konkrete Desktop-Oberflächen
+
+Der Anwendungscode trennt mehrere Bedienmodi:
+
+- **Mini Popup:** kompakter Zugriff auf Aktionen zur aktuellen Auswahl.
+- **Command Palette:** durchsuchbare Befehle mit Tastaturbedienung und Clipboard-Interaktion.
+- **Radial / Marking Menu:** SVG-Menü mit acht Sektoren, Pointer-Richtungsauswertung sowie den Tasten `1–8`, Pfeiltasten, Enter und Escape.
+- **QuickCompress HUD:** kompaktes Fenster für kompressionsbezogene Aktionen.
+- **AI Explain:** eigenständige Oberfläche für kontextbezogene Erklärungen.
+- **Settings:** umfangreiche, in mehrere Bereiche unterteilte Einstellungen für Darstellung und Interaktion.
+
+Die native Rust-Schicht definiert unterschiedliche Fenstergrößen für Kompressions-HUD, Radialmenü und größere Arbeitsflächen. Diese Geometrie ist Teil des Desktop-Designs und nicht nur ein CSS-Breakpoint.
+
+### Aktionsfilterung, Ausführung und Wiederherstellung
+
+Im Backend existieren **dateispezifische Aktionsfilter** (`ActionRegistry::actions_for_files`) und ein **Vorschlagsranking** (`rank_suggestions`). Dadurch kann die Anwendbarkeit einer Aktion unabhängig von der Darstellung im Menü modelliert werden. Ein separates Rust-Jobmodul behandelt Ausführung und Undo-bezogene Logik.
+
+Ein Undo-Modell bedeutet nicht, dass jede destruktive Dateisystemaktion garantiert rückgängig gemacht werden kann. Die Wiederherstellbarkeit hängt von der tatsächlichen Operation und ihrem Ergebnis ab.
+
+### KI-Oberfläche und Modellinferenz
+
+Die Anwendung enthält eine **AI-Explain-Oberfläche und beispielhafte UI-Antworten**. Dies ist nicht gleichbedeutend mit einem vollständig nachgewiesenen produktiven KI-Backend für alle Funktionen. Semantische Suche, Zusammenfassung, Kategorisierung und natürlichsprachliche Stapelverarbeitung werden unten als **Funktionsbereiche** beschrieben. Die praktische Umsetzung hängt von Modellanbindung, Dateiadaptern, Regelprüfung und Zustimmung ab.
+
+### Plattformintegration
+
+Die native Integration fokussiert zunächst **Linux-Desktops**, mit eigenen Anforderungen für **X11 und Wayland**. Fensterfokus, globale Pointer-Gesten, Transparenz und Compositorverhalten sind zwischen beiden Systemen nicht identisch. Strukturen für Windows und macOS sind ebenfalls vorhanden, begründen aber noch keine vollständige Funktionsparität.
+
+---
+
 ## Interaktionsflächen
 
 | Oberfläche | Interaktionsmodell | Technische Anforderung |
