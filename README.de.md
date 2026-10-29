@@ -1,76 +1,144 @@
 <div align="center">
 
 # QuickFile
-### Kontextbezogene Dateiaktionen für den Desktop
+### Kontextbezogene Desktop-Arbeitsoberfläche für intelligente Dateioperationen
 
-<img src="./assets/hero.svg" alt="QuickFile — kontextbezogene Desktop-Aktionen" width="100%" />
+<img src="./assets/hero.svg" alt="QuickFile – visuelle Projektidentität" width="100%" />
 
-**Desktop-Produktivität** · **Kontextbezogene Workflows** · **Interaction Engineering**
+**Kontextbefehle** · **KI-gestützte Dateiabläufe** · **Desktop Interaction Engineering**
 
-[English](./README.md) · [Deutsch](./README.de.md) · [Türkçe](./README.tr.md)
+[English](./README.md) · [**Deutsch**](./README.de.md) · [Türkçe](./README.tr.md)
 
 </div>
 
 ---
 
-## Überblick
+## Konzept
 
-**QuickFile** untersucht einen direkteren Umgang mit Dateien und Ordnern. Statt für alltägliche Aktionen mehrere Fenster zu durchlaufen, stehen das ausgewählte Element, sein Kontext und die gerade relevanten Befehle im Mittelpunkt.
+**QuickFile** bringt Dateioperationen direkt an den Ort der Aufmerksamkeit. Dateisystemkontext, aktionsorientierte Oberfläche und optionale KI-Unterstützung bilden einen gemeinsamen Desktop-Arbeitsablauf.
 
-Das Produkt kombiniert die Auffindbarkeit kontextbezogener Menüs mit schnellen Tastaturabläufen und kompakten Desktop-Oberflächen. Es ergänzt den Dateimanager des Betriebssystems, statt ihn zu ersetzen.
+Klassische Dateimanager sind auf Navigation ausgelegt, Launcher auf Befehle und KI-Tools häufig auf Chats. QuickFile untersucht die Verbindung: **Element auswählen → Kontext erfassen → Aktion festlegen → Vorschau prüfen → kontrolliert ausführen**.
 
-## Interaktionsmodell
+<img src="./assets/interaction-system.svg" alt="Interaktionsoberflächen von QuickFile mit gemeinsamem Befehlsmodell" width="100%" />
 
-| Oberfläche | Aufgabe |
-|---|---|
-| **Kontextaktionen** | Passende Befehle für Dateien, Ordner und den aktuellen Kontext anbieten |
-| **Schnellaktionsbereich** | Häufige Operationen kompakt zugänglich machen |
-| **Radiale und verschachtelte Menüs** | Verwandte Befehle verständlich strukturieren |
-| **Tastaturinteraktion** | Schnelle Navigation und Befehlsausführung unterstützen |
-| **Dateiinspektor** | Metadaten und verfügbare Aktionen zusammen darstellen |
-| **Aktionsfeedback** | Fortschritt, Ergebnis, Fehler und notwendige Bestätigung anzeigen |
+## Interaktionsflächen
 
-Unterschiedliche Eingabemethoden sollen dieselbe Befehlssemantik verwenden: Ein Tastaturkürzel und ein Kontextmenü dürfen die Bedeutung einer Aktion nicht verändern.
+| Oberfläche | Interaktionsmodell | Technische Anforderung |
+|---|---|---|
+| **Kontextmenü** | Dateityp- und auswahlabhängige Befehle | Filterung, Verfügbarkeit, Berechtigungen |
+| **Schnellaktionspalette** | Befehle suchen und ohne großes Fenster ausführen | Tastaturfokus, Ranking, Shortcuts |
+| **Radiale Aktionen** | Häufige Operationen räumlich gruppieren | Zielgrößen, Abbruch, Bedienbarkeit |
+| **Verschachtelte Menüs** | Komplexe Befehle schrittweise erschließen | Navigation, Zustandsübergänge |
+| **Dateiinspektor** | Pfad, Größe, Zeitstempel, Eigenschaften und Aktionen | Asynchrone Metadaten, veraltete Auswahl |
+| **Stapelverarbeitung** | Einen Befehl auf mehrere Dateien anwenden | Konflikte, Teilerfolge, Einzelergebnisse |
+| **Vorschau / Bestätigung** | Geplante Änderungen vor Ausführung prüfen | Sicherheit, Änderungsvergleich |
+| **Aktivität / Wiederherstellung** | Laufende und abgeschlossene Vorgänge erklären | Fortschritt, Abbruch, Wiederholung |
 
-## Konzeptionelle Architektur
+Die verschiedenen Oberflächen sollen dieselbe Befehlssemantik verwenden. Ein Tastaturkürzel und ein Kontextmenü dürfen unterschiedliche Einstiegspunkte, aber nicht unterschiedliche Dateisystemregeln besitzen.
+
+### Kontextbezogene Befehlsauflösung
+
+Die Aktion **Umbenennen** benötigt je nach Auswahl unterschiedliche Vorbedingungen:
+
+- Eine einzelne beschreibbare Datei kann direkt umbenannt werden.
+- Mehrere Dateien benötigen einen Batch-Plan inklusive Kollisionsprüfung.
+- Schreibgeschützte Ordner dürfen nicht als regulär editierbar erscheinen.
+- Zwischen Vorschau und Ausführung verschwundene Einträge müssen erneut geprüft werden.
+- KI-generierte Dateinamen dürfen Zeichen-, Pfad- und Überschreibungsregeln nicht umgehen.
+
+Die Oberfläche zeigt den Zustand eines **Befehlsvertrags**, erteilt aber selbst keine Dateisystemberechtigung.
+
+## KI-gestützte Dateiverarbeitung
+
+Die KI-Schicht wird als **Vorschlagsmaschine** betrachtet, nicht als Instanz, die selbstständig das Dateisystem verändert. Folgende Fähigkeiten gehören zum Interaktionsmodell; ihre konkrete Verfügbarkeit hängt von Dateiadaptern, Modellkonfiguration und Validierung ab.
+
+| Fähigkeit | Anwendung | Sicherheitsgrenze |
+|---|---|---|
+| **Semantische Dateisuche** | Inhalte und Bedeutung statt nur Dateinamen suchen | Definierter Indexbereich, nachvollziehbare Treffer |
+| **Zusammenfassungen** | Ausgewählte Dokumente oder Dateigruppen zusammenfassen | Dateiformat- und Größenlimits |
+| **Intelligentes Umbenennen** | Namen aus Inhalt und Metadaten vorschlagen | Alte und neue Pfade einzeln prüfen |
+| **Kategorisierung** | Rechnungen, Bilder, Dokumente und Projektdateien gruppieren | Konfidenz und manuelle Korrektur |
+| **Stapelorganisation** | Natürliche Sprache in Kopier-/Verschiebe-/Umbenennungspläne übersetzen | Simulation, Kollisionsprüfung, Freigabe |
+| **Metadatenextraktion** | Strukturierte Tags und Suchattribute ableiten | Herkunft und Extraktionsfehler |
+| **Workflow-Vorschläge** | Passende Aktionen im aktuellen Kontext anbieten | Nachvollziehbare, optionale Ausführung |
+
+### Beispiel: natürlicher Sprachbefehl
+
+> „Sortiere diese PDFs nach Jahr, gib ihnen einheitliche Namen und behalte die Originale.“
+
+Daraus entsteht ein **prüfbarer Aktionsplan** mit erkanntem Jahr, Zielordner, ursprünglichem und vorgeschlagenem Dateipfad, Unklarheiten sowie Kopier- oder Verschiebesemantik. Erst nach der Prüfung wird geschrieben. Fehlende Daten und Namenskonflikte dürfen nicht stillschweigend geraten werden.
+
+<img src="./assets/ai-workflow.svg" alt="Vom KI-Vorschlag über Validierung und Vorschau zur bestätigten Ausführung" width="100%" />
+
+**Datenschutzgrenze:** Lokale Metadatenverarbeitung und externe Modellinferenz sind nicht gleichwertig. Eine sichere Architektur unterscheidet lokale Verarbeitung, optionale externe Anbieter und ausdrückliche Zustimmung. Das Auswählen eines KI-Befehls ist keine pauschale Erlaubnis, Dokumentinhalte an fremde Dienste zu übermitteln.
+
+## Technische Architektur
 
 ```mermaid
-flowchart LR
-    OS[Dateisystem-Kontext] --> MODEL[Auswahl & Kontext]
-    KB[Tastatureingabe] --> COMMANDS[Befehlsschnittstelle]
-    POINTER[Maus / Menüs] --> COMMANDS
-    MODEL --> COMMANDS
-    COMMANDS --> VALIDATE[Validierung & Sicherheit]
-    VALIDATE --> EXEC[Dateioperation]
-    EXEC --> FEEDBACK[Fortschritt & Ergebnis]
+flowchart TB
+    UI["Kontextmenü · Palette · Radialmenü · Inspektor"]
+    CTX["Auswahlkontext / Dateimetadaten"]
+    REG["Befehlsregister / Verfügbarkeitsprüfung"]
+    PLAN["Aktionsplanung"]
+    AI["Optionaler KI-Adapter"]
+    POLICY["Regeln / Berechtigungen / Kollisionen"]
+    PREVIEW["Vorschau + Nutzerfreigabe"]
+    EXEC["Dateisystemadapter"]
+    EVENTS["Ergebnis / Fortschritt / Fehler"]
+
+    UI --> CTX --> REG --> PLAN
+    AI -. "strukturierte Vorschläge" .-> PLAN
+    PLAN --> POLICY --> PREVIEW --> EXEC --> EVENTS
+    EVENTS --> UI
 ```
 
-Das Diagramm beschreibt die Interaktionsarchitektur und nicht notwendigerweise einzelne Implementierungsmodule.
+Das Diagramm beschreibt **Architekturgrenzen**, nicht die Behauptung, dass alle Adapter bereits als ausführbare Module veröffentlicht wurden.
 
-## Technische Schwerpunkte
+### Beispiel eines Befehlsvertrags
 
-**Kontextauflösung.** Aktionen müssen sich für Dateien, Ordner, Mehrfachauswahl und inzwischen veränderte Dateisystemeinträge vorhersehbar verhalten.
+```ts
+type FileActionPlan = {
+  operation: "copy" | "move" | "rename" | "delete";
+  targets: Array<{
+    source: string;
+    destination?: string;
+    expectedFingerprint?: string;
+  }>;
+  preconditions: string[];
+  collisions: Array<{ path: string; reason: string }>;
+  confirmationRequired: boolean;
+};
+```
 
-**Sichere Operationen.** Destruktive Aktionen erfordern klare Rückmeldung und angemessene Bestätigung. Berechtigungsfehler, Namenskonflikte und teilweise abgeschlossene Vorgänge müssen verständlich bleiben.
+Die Schnittstelle ist **illustrativ**, keine Zusage einer veröffentlichten API. Sie trennt UI- bzw. KI-Vorschläge von validierten Dateioperationen.
 
-**Reaktionsfähigkeit.** Teure oder asynchrone Dateioperationen dürfen die Oberfläche nicht blockieren; laufende, erfolgreiche und fehlgeschlagene Aktionen müssen unterscheidbar sein.
+## Robustheit und Fehlerfälle
 
-**Konsistente Eingabe.** Maus, Tastatur und Menüs benötigen ein gemeinsames Befehlsmodell, klares Fokusverhalten und zugängliche Zustände.
+| Risiko | Technische Maßnahme |
+|---|---|
+| **Time-of-check / time-of-use** | Auswahl und Ziel unmittelbar vor Ausführung erneut prüfen |
+| **Namenskollisionen** | Definierte Strategien: überspringen, umbenennen, bewusst ersetzen |
+| **Teilerfolg bei Batch-Aktionen** | Einzelne Resultate protokollieren statt künstliche Atomizität zu behaupten |
+| **Abbruch** | Unterbrechbare Vorgänge und Wiederherstellungsgrenzen unterscheiden |
+| **Berechtigungen / Dateisperren** | Echte Fehler anzeigen, keine scheinbaren Erfolge |
+| **Pfad- und Link-Sicherheit** | Symbolische Links, Traversal und geschützte Ziele berücksichtigen |
+| **Unzuverlässige KI-Ausgabe** | Strukturierte Befehle parsen, zulässige Aktionen prüfen, Freigabe verlangen |
+| **Lange Operationen** | Fortschritt ohne blockierende Oberfläche darstellen |
 
-**Desktop-Integration.** Dateisystemrechte und betriebssystemspezifische Konventionen bilden Plattformgrenzen, die explizit berücksichtigt werden müssen.
+Undo-Garantien müssen zur Operation passen: Eine reversible Umbenennung und eine endgültige Löschung besitzen nicht denselben Wiederherstellungsweg.
 
-## Designansatz
+## Desktop-Designsystem
 
-QuickFile setzt auf eine kompakte, informationsdichte Desktop-Gestaltung mit präziser Hierarchie, zurückhaltender Bewegung, klaren Fokuszuständen und kontextbezogener Darstellung.
+QuickFile setzt auf hohe Informationsdichte, präzise Hierarchie, reduzierte Bewegung und eindeutige Zustände für Auswahl, Hover, Tastaturfokus, Deaktivierung, Wartezeiten, destruktive Aktionen und Erfolg.
 
-Die zentrale Frage lautet: **Wie viele Schritte lassen sich aus alltäglichen Dateioperationen entfernen, ohne Kontrolle oder Verständlichkeit zu verlieren?**
+Zu den Interaktionsbausteinen gehören Aktionszeilen, Suchpaletten, verschachtelte Menüs, Inspektoren, Bestätigungsdialoge, Vorschauen, Fortschrittsanzeigen und Aktivitäten.
+
+**Projektkontext:** QuickFile ist als Open-Source-Desktop-Produkt ausgerichtet. Dieses Repository beschreibt das Produkt- und Interaktionsmodell; Diagramme und Codebeispiele sind keine Leistungsnachweise oder Behauptungen über den Implementierungsstand jeder Funktion.
 
 ---
 
 <div align="center">
 
-**QuickFile** · `Desktop Engineering` · `File Workflows` · `Productivity` · `Interaction Design`
-
-Entwickelt von [Taha Kubilay](https://github.com/tahakubilay)
+Entwickelt von [Taha Kubilay](https://github.com/tahakubilay) · [English](./README.md) · [Türkçe](./README.tr.md)
 
 </div>
