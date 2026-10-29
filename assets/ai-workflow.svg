@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="335" viewBox="0 0 1200 335" role="img" aria-labelledby="t d">
+<title id="t">QuickFile AI execution boundary</title><desc id="d">A file intent becomes a structured AI proposal, passes validation and preview, and is executed only after user confirmation.</desc>
+<defs><linearGradient id="b" x2="1" y2="1"><stop stop-color="#0C1321"/><stop offset="1" stop-color="#172338"/></linearGradient><pattern id="g" width="36" height="36" patternUnits="userSpaceOnUse"><path d="M36 0H0V36" stroke="#60718D" stroke-opacity=".1" fill="none"/></pattern></defs>
+<rect width="1200" height="335" rx="20" fill="url(#b)"/><rect width="1200" height="335" rx="20" fill="url(#g)"/>
+<text x="38" y="45" font-family="Arial,sans-serif" font-size="16" letter-spacing="3" fill="#9BB6E8">02 / AI-ASSISTED OPERATION SAFETY</text>
+<g font-family="Arial,sans-serif">
+<g stroke-width="1.4"><rect x="42" y="96" width="203" height="112" rx="15" fill="#13243A" stroke="#54709A"/><rect x="278" y="96" width="203" height="112" rx="15" fill="#13243A" stroke="#54709A"/><rect x="514" y="96" width="203" height="112" rx="15" fill="#152B41" stroke="#79A2E8"/><rect x="750" y="96" width="203" height="112" rx="15" fill="#163747" stroke="#70D1C1"/><rect x="986" y="96" width="173" height="112" rx="15" fill="#162C37" stroke="#70D1C1"/></g>
+<g fill="#FFFFFF" font-size="21" font-weight="bold"><text x="63" y="132">User Intent</text><text x="299" y="132">AI Proposal</text><text x="535" y="132">Validation</text><text x="771" y="132">User Review</text><text x="1007" y="132">Execution</text></g>
+<g fill="#B8CADE" font-size="14"><text x="63" y="161">Selected files</text><text x="63" y="180">+ requested action</text><text x="299" y="161">Structured operations</text><text x="299" y="180">without direct writes</text><text x="535" y="161">Paths / collisions</text><text x="535" y="180">permissions / policy</text><text x="771" y="161">Diff + confirmation</text><text x="771" y="180">for every change</text><text x="1007" y="161">Filesystem adapter</text><text x="1007" y="180">+ result report</text></g>
+<g stroke="#91B3F3" stroke-width="2.4" fill="none" stroke-linecap="round"><path d="M245 151h33m203 0h33m203 0h33m203 0h33"/><path d="M266 145l12 6-12 6m236-12l12 6-12 6m236-12l12 6-12 6m236-12l12 6-12 6"/></g>
+<path d="M600 209v39H380" stroke="#F3BC80" stroke-dasharray="5 6" stroke-width="2" fill="none"/>
+<text x="371" y="254" text-anchor="end" fill="#F3C49B" font-size="14">Rejected / ambiguous plan → no filesystem changes</text>
+<text x="600" y="298" text-anchor="middle" fill="#8FC6BA" font-size="16" letter-spacing="1">AI SUGGESTS • POLICY VALIDATES • USER DECIDES</text>
+</g></svg>
