@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="530" viewBox="0 0 1200 530" role="img" aria-labelledby="t d">
+<title id="t">QuickFile native runtime architecture</title><desc id="d">Linux CLI and resident host activation, Tauri WebView and Rust command bridge, action registry, job execution engine and SQLite WAL persistence.</desc>
+<defs>
+<linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#0B1424"/><stop offset="1" stop-color="#14273D"/></linearGradient>
+<pattern id="grid" width="34" height="34" patternUnits="userSpaceOnUse"><path d="M34 0H0V34" stroke="#93AFC9" stroke-opacity=".07" fill="none"/></pattern>
+<linearGradient id="signal" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#8CAFFE"/><stop offset="1" stop-color="#75DBC2"/></linearGradient>
+<marker id="arrow" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M1 1L6 3.5L1 6" fill="none" stroke="#9DBCF4" stroke-width="1.3"/></marker>
+</defs>
+<rect width="1200" height="530" rx="20" fill="url(#bg)"/><rect width="1200" height="530" rx="20" fill="url(#grid)"/>
+<g font-family="Arial,Helvetica,sans-serif">
+<text x="36" y="43" font-size="16" letter-spacing="2.5" fill="#99B5FA">03 / NATIVE DESKTOP RUNTIME</text>
+<text x="36" y="69" font-size="13" fill="#9FB5CC">Separate UI, command execution, local state and OS invocation boundaries</text>
+<rect x="37" y="107" width="294" height="268" rx="18" fill="#12233B" stroke="#607B9B" stroke-width="1.4"/>
+<text x="60" y="139" font-size="14" fill="#96ABD4" letter-spacing="1.5">INPUT AND ACTIVATION</text>
+<rect x="59" y="157" width="248" height="79" rx="13" fill="#1D3450" stroke="#7393C5"/>
+<text x="77" y="189" font-size="19" fill="#F6F9FD" font-weight="bold">CLI / OS Invocation</text>
+<text x="77" y="211" font-size="13" fill="#B7C9E3">External desktop trigger</text>
+<rect x="59" y="266" width="248" height="84" rx="13" fill="#193B48" stroke="#6ABDAE"/>
+<text x="77" y="296" font-size="19" fill="#F6F9FD" font-weight="bold">Resident Host</text>
+<text x="77" y="319" font-size="13" fill="#B7D9CF">Unix socket (Linux)</text>
+<path d="M183 236v30" stroke="#86B3EE" stroke-width="2.2" marker-end="url(#arrow)"/>
+<rect x="358" y="107" width="347" height="268" rx="18" fill="#162C46" stroke="#637DA3" stroke-width="1.4"/>
+<text x="381" y="139" font-size="14" fill="#96ABD4" letter-spacing="1.5">TAURI 2 DESKTOP PROCESS</text>
+<rect x="380" y="157" width="303" height="87" rx="13" fill="#233C5B" stroke="#8CAFFE"/>
+<text x="398" y="189" font-size="20" fill="#F8FBFF" font-weight="bold">React / TypeScript WebView</text>
+<text x="398" y="215" font-size="13" fill="#C1D0E9">Menus · palette · radial · HUD · settings</text>
+<rect x="380" y="272" width="303" height="78" rx="13" fill="#1A3C4A" stroke="#75DBC2"/>
+<text x="398" y="301" font-size="19" fill="#F8FBFF" font-weight="bold">Rust Command + Event Bridge</text>
+<text x="398" y="325" font-size="13" fill="#B3D8D2">Native window control / invoke / events</text>
+<path d="M532 244v28" stroke="#91B5E7" stroke-width="2.2" marker-end="url(#arrow)"/>
+<path d="M331 308h49" stroke="#91B5E7" stroke-width="2.2" marker-end="url(#arrow)"/>
+<rect x="732" y="107" width="432" height="268" rx="18" fill="#13283A" stroke="#607B9B" stroke-width="1.4"/>
+<text x="755" y="139" font-size="14" fill="#96ABD4" letter-spacing="1.5">MODULAR RUST CORE</text>
+<rect x="755" y="157" width="383" height="82" rx="13" fill="#213954" stroke="#8CAFFE"/>
+<text x="775" y="189" font-size="19" font-weight="bold" fill="#F8FBFF">Action Registry</text>
+<text x="775" y="215" font-size="13" fill="#BDD0EB">File compatibility · relevance ranking</text>
+<rect x="755" y="266" width="383" height="84" rx="13" fill="#1B3D45" stroke="#75DBC2"/>
+<text x="775" y="299" font-size="19" font-weight="bold" fill="#F8FBFF">Job Engine</text>
+<text x="775" y="324" font-size="13" fill="#B8DCD3">Operations · job state · undo semantics</text>
+<path d="M683 309h72" stroke="#91B5E7" stroke-width="2.2" marker-end="url(#arrow)"/>
+<path d="M947 239v27" stroke="#91B5E7" stroke-width="2.2" marker-end="url(#arrow)"/>
+<rect x="732" y="411" width="432" height="78" rx="15" fill="#183844" stroke="#71BDAC" stroke-width="1.4"/>
+<text x="752" y="442" font-size="19" font-weight="bold" fill="#F8FBFF">SQLite / WAL</text>
+<text x="752" y="468" font-size="13" fill="#B4D9D3">Local persistent state and journaled writes</text>
+<path d="M948 375v36" stroke="#86CFC0" stroke-width="2.2" marker-end="url(#arrow)"/>
+<rect x="38" y="410" width="635" height="79" rx="15" fill="#172B3E" stroke="#526D89" stroke-width="1.2"/>
+<text x="60" y="440" font-size="17" fill="#EDF4FC" font-weight="bold">Platform boundary</text>
+<text x="60" y="462" font-size="14" fill="#AFC1D6">Linux X11 / Wayland behaviors differ; Windows and macOS need platform validation.</text>
+</g></svg>
